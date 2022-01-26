@@ -8,6 +8,8 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install and Build
+      env: |
+        BASEPATH: '/${{ github.event.repository.name }}/'
       run: |
         npm ci
         npm run build
