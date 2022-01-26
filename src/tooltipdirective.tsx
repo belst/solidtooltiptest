@@ -10,39 +10,32 @@ let tooltipcontainer: HTMLDivElement = (
     }}>{values() as JSXElement}</div> as HTMLDivElement
 );
 
-const calculatePosition = (x: number, y: number, target: HTMLElement) => {
+const calculatePosition = (e: MouseEvent, target: HTMLElement) => {
     const { width, height } = target.getBoundingClientRect();
-    const { width: bwidth } = document.body.getBoundingClientRect();
-
-    const bheight = Math.max(
-        document.body.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.clientHeight,
-        document.documentElement.scrollHeight,
-        document.documentElement.offsetHeight
-    );
 
     const position: { [key: string]: null | string } = {
         left: null,
         top: null
     };
 
-    if (x + width > bwidth) {
-        position.left = `${x - width}px`;
+    const offset = 20;
+
+    if (e.clientX + width > window.innerWidth) {
+        position.left = `${e.pageX - width}px`;
     } else {
-        position.left = `${x}px`;
+        position.left = `${e.pageX}px`;
     }
-    if (y + height > bheight) {
-        position.top = `${y - height}px`;
+    if (e.clientY + height + offset > window.innerHeight) {
+        position.top = `${e.pageY - height - offset}px`;
     } else {
-        position.top = `${y}px`;
+        position.top = `${e.pageY + offset}px`;
     }
 
     return position;
 }
 
 const l = (e: MouseEvent) => {
-    const pos = calculatePosition(e.pageX, e.pageY, tooltipcontainer);
+    const pos = calculatePosition(e, tooltipcontainer);
     tooltipcontainer.style.top = pos.top as string;
     tooltipcontainer.style.left = pos.left as string;
 }
