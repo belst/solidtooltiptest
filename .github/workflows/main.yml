@@ -1,6 +1,5 @@
 name: Build and Deploy
 on: [push]
-name: Create GH Pages
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -18,4 +17,3 @@ jobs:
       with:
         branch: gh-pages
         folder: dist
-        
