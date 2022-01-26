@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, JSX, on, Show, splitProps } from 'solid-js';
+import { batch, Component, createEffect, createSignal, JSX, on, Show, splitProps } from 'solid-js';
 import { Portal } from 'solid-js/web';
 
 const Tooltip: Component<{ content: any } & JSX.HTMLAttributes<HTMLDivElement>> = (props) => {
@@ -43,15 +43,19 @@ const Tooltip: Component<{ content: any } & JSX.HTMLAttributes<HTMLDivElement>> 
     }
 
     const l = (e: MouseEvent) => {
-        setX(e.pageX);
-        setY(e.pageY);
+        batch(() => {
+            setX(e.pageX);
+            setY(e.pageY);
+        });
     };
 
     const mouseenter = (e: MouseEvent) => {
-        setX(e.pageX);
-        setY(e.pageY);
-        setShow(true);
-        document.body.addEventListener('mousemove', l);
+        batch(() => {
+            setX(e.pageX);
+            setY(e.pageY);
+            setShow(true);
+            document.body.addEventListener('mousemove', l);
+        });
     }
 
     const mouseleave = (e: MouseEvent) => {
