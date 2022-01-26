@@ -1,5 +1,17 @@
-import { Component, For } from 'solid-js';
-import Tooltip from './Tooltip';
+import type { Component } from 'solid-js';
+
+import { For, createSignal } from 'solid-js';
+
+import tooltip from './tooltipdirective';
+tooltip;
+
+declare module "solid-js" {
+  namespace JSX {
+    interface Directives {
+      tooltip: Element;
+    }
+  }
+}
 
 const TTBox: Component<{ id: number }> = (props) => {
 
@@ -16,24 +28,38 @@ const TTBox: Component<{ id: number }> = (props) => {
       <h4>Tooltip: {props.id}</h4>
     </div>
   );
-}
+};
 
 const App: Component = () => {
-  const testdata = [...Array(720)].map((_, i) => ({ id: i, background: `hsl(${i}, 100%, 50%)` }));
+  const d = [...Array(720)].map((_, i) => ({ id: i, background: `hsl(${i}, 100%, 50%)` }));
+  const [testdata, setTestdata] = createSignal(d);
+
+  const toggletestdata = () => {
+    if (testdata().length === 0) {
+      setTestdata(d);
+    } else {
+      setTestdata([]);
+    }
+  };
 
   return (
-    <div style="display: grid; grid-gap: 2px; grid-template-rows: repeat(auto-fill, minmax(70px, 1fr)); grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));">
-      <For each={testdata}>
-        {d => <Tooltip style={{
-          width: '68px',
-          height: '68px',
-          background: d.background,
-          display: 'flex',
-          'align-items': 'center',
-          'justify-content': 'center'
-        }} content={<TTBox id={d.id} />}>{d.id}</Tooltip>}
-      </For>
-    </div>
+    <>
+      <button onclick={toggletestdata}>Toggle</button>
+      <div style="display: grid; grid-gap: 2px; grid-template-rows: repeat(auto-fill, minmax(70px, 1fr)); grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));">
+        <For each={testdata()}>
+          {d => <div
+            style={{
+              width: '68px',
+              height: '68px',
+              background: d.background,
+              display: 'flex',
+              'align-items': 'center',
+              'justify-content': 'center'
+            }}
+            use:tooltip={<TTBox id={d.id} />}>{d.id}</div>}
+        </For>
+      </div>
+    </>
   );
 };
 
