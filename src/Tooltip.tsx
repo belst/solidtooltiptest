@@ -4,37 +4,78 @@ import { Portal } from 'solid-js/web';
 const Tooltip: Component<{ content: any } & JSX.HTMLAttributes<HTMLDivElement>> = (props) => {
 
     const [show, setShow] = createSignal(false);
+    const [x, setX] = createSignal(0);
+    const [y, setY] = createSignal(0);
+
 
     const [local, divprops] = splitProps(props, ['children', 'content'])
 
-    let portal!: HTMLDivElement;
+
+    const calculatePosition = (target: HTMLElement) => {
+        const { width, height } = target.getBoundingClientRect();
+        const { width: bwidth } = document.body.getBoundingClientRect();
+
+        const bheight = Math.max(
+            document.body.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.clientHeight,
+            document.documentElement.scrollHeight,
+            document.documentElement.offsetHeight
+        );
+
+        const position: { [key: string]: null | string } = {
+            left: null,
+            right: null,
+            top: null
+        };
+
+        if (x() + width > bwidth) {
+            position.right = `${bwidth - x()}px`;
+        } else {
+            position.left = `${x()}px`;
+        }
+        if (y() + height > bheight) {
+            position.top = `${y() - height}px`;
+        } else {
+            position.top = `${y()}px`;
+        }
+
+        return position;
+    }
+
+    let foo!: HTMLDivElement;
+
+
     const l = (e: MouseEvent) => {
-        portal.style.position = 'absolute';
-        portal.style.top = `${e.clientY}px`;
-        portal.style.left = `${e.clientX}px`;
-        console.log(portal);
+        setX(e.pageX);
+        setY(e.pageY);
     };
 
     const mouseenter = (e: MouseEvent) => {
-        console.log('mouseenter', e);
+        setX(e.pageX);
+        setY(e.pageY);
         setShow(true);
         document.body.addEventListener('mousemove', l);
-        setTimeout(() => portal.style.pointerEvents = 'none', 0);
     }
 
     const mouseleave = (e: MouseEvent) => {
-        console.log('mouseleave', e.currentTarget)
         setShow(false);
         document.body.removeEventListener('mousemove', l);
     }
-
     return (
         <>
             <Show when={show()}>
-                <Portal mount={document.getElementById('overlay') as Node} ref={portal}>{local.content}</Portal>
+                <Portal>
+                    <div ref={foo} style={{
+                        position: 'absolute',
+                        'pointer-events': 'none',
+                        ...calculatePosition(foo)
+                    }}>{local.content}</div>
+                </Portal>
             </Show>
-            <div {...divprops} onmouseover={mouseenter} onmouseleave={mouseleave}>{local.children}</div>
-        </>);
+            <div {...divprops} onmouseenter={mouseenter} onmouseleave={mouseleave}>{local.children}</div>
+        </>
+    );
 };
 
 export default Tooltip;
