@@ -24,7 +24,14 @@ const App: Component = () => {
   return (
     <div style="display: grid; grid-gap: 2px; grid-template-rows: repeat(auto-fill, minmax(70px, 1fr)); grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));">
       <For each={testdata}>
-        {d => <Tooltip style={{ width: '68px', height: '68px', background: d.background }} content={<TTBox id={d.id} />}>{d.id}</Tooltip>}
+        {d => <Tooltip style={{
+          width: '68px',
+          height: '68px',
+          background: d.background,
+          display: 'flex',
+          'align-items': 'center',
+          'justify-content': 'center'
+        }} content={<TTBox id={d.id} />}>{d.id}</Tooltip>}
       </For>
     </div>
   );
