@@ -1,4 +1,4 @@
-import { Component, createSignal, JSX, Show, splitProps } from 'solid-js';
+import { Component, createEffect, createSignal, JSX, on, Show, splitProps } from 'solid-js';
 import { Portal } from 'solid-js/web';
 
 const Tooltip: Component<{ content: any } & JSX.HTMLAttributes<HTMLDivElement>> = (props) => {
@@ -25,12 +25,11 @@ const Tooltip: Component<{ content: any } & JSX.HTMLAttributes<HTMLDivElement>> 
 
         const position: { [key: string]: null | string } = {
             left: null,
-            right: null,
             top: null
         };
 
         if (x() + width > bwidth) {
-            position.right = `${bwidth - x()}px`;
+            position.left = `${x() - width}px`;
         } else {
             position.left = `${x()}px`;
         }
@@ -42,9 +41,6 @@ const Tooltip: Component<{ content: any } & JSX.HTMLAttributes<HTMLDivElement>> 
 
         return position;
     }
-
-    let foo!: HTMLDivElement;
-
 
     const l = (e: MouseEvent) => {
         setX(e.pageX);
@@ -62,15 +58,24 @@ const Tooltip: Component<{ content: any } & JSX.HTMLAttributes<HTMLDivElement>> 
         setShow(false);
         document.body.removeEventListener('mousemove', l);
     }
+
+    let ref: HTMLDivElement | undefined;
+
+    createEffect(on([show, x, y], () => {
+        if (show() && ref) {
+            ref.style.position = 'absolute';
+            ref.style.pointerEvents = 'none';
+            const pos = calculatePosition(ref);
+            ref.style.top = pos.top as string;
+            ref.style.left = pos.left as string;
+        }
+    }));
+
     return (
         <>
             <Show when={show()}>
-                <Portal>
-                    <div ref={foo} style={{
-                        position: 'absolute',
-                        'pointer-events': 'none',
-                        ...calculatePosition(foo)
-                    }}>{local.content}</div>
+                <Portal ref={ref}>
+                    {local.content}
                 </Portal>
             </Show>
             <div {...divprops} onmouseenter={mouseenter} onmouseleave={mouseleave}>{local.children}</div>
