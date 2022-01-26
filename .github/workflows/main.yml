@@ -1,29 +1,21 @@
-on: push
+name: Build and Deploy
+on: [push]
 name: Create GH Pages
 jobs:
-  createGhPages:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Use Node.js 16
-      uses: actions/setup-node@v1
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install and Build
+      run: |
+        npm ci
+        npm run build
+    
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@v4.2.2
       with:
-        node-version: '16'
-    - name: Cache
-      uses: actions/cache@v2.1.7
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - name: Create GH Pages
-      uses: pkgjs/gh-pages@master
-      with:
-        nojekyll: true
-        repo: pkgjs/gh-pages
-        commit: pages build from ${GITHUB_SHA}
-        build: |
-          npm install
-          npm run build -- --outDir gh-pages
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        branch: gh-pages
+        folder: dist
         
