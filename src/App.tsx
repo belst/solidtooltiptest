@@ -2,7 +2,7 @@ import type { Component } from 'solid-js';
 
 import { For, createSignal } from 'solid-js';
 
-import tooltip from './tooltipdirective';
+import tooltip, { TooltipProvider } from './tooltipdirective';
 tooltip;
 
 declare module "solid-js" {
@@ -31,7 +31,7 @@ const TTBox: Component<{ id: number }> = (props) => {
 };
 
 const App: Component = () => {
-  const d = [...Array(720)].map((_, i) => ({ id: i, background: `hsl(${i}, 100%, 50%)` }));
+  const d = [...Array(360)].map((_, i) => ({ id: i, background: `hsl(${i}, 100%, 50%)` }));
   const [testdata, setTestdata] = createSignal(d);
 
   const toggletestdata = () => {

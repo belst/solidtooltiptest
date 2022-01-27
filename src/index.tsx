@@ -1,5 +1,13 @@
 import { render } from 'solid-js/web';
+import { TooltipProvider } from './tooltipdirective';
 
 import App from './App';
 
-render(() => <App />, document.getElementById('root') as HTMLElement);
+render(
+    () => (
+        <TooltipProvider>
+            <App />
+        </TooltipProvider>
+    ),
+    document.getElementById('root') as HTMLElement
+);
